@@ -10,9 +10,12 @@
 <!-- 他のコンテンツがここに入るかもしれません -->
 
 <script>
-    .then(data => {
-    console.log(data); // レスポンスを表示
-        
+.catch(error => {
+    const errorMessage = document.createElement('div');
+    errorMessage.textContent = `エラー: ${error.message}`;
+    document.body.appendChild(errorMessage);
+});
+
     // ページが読み込まれたときに実行される関数
     window.onload = function() {
         // アドレスバーからvideoidを取得
