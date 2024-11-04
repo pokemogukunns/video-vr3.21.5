@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+</head>
+<body>
+
+<!-- 他のコンテンツがここに入るかもしれません -->
+
+<script>
+    // ページが読み込まれたときに実行される関数
+    window.onload = function() {
+        // アドレスバーからvideoidを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoId = urlParams.get('v');
+
+        // APIリクエストのURLを生成
+        const apiUrl = `https://inv.nadeko.net/api/v1/videos/${videoId}`;
+
+        // APIにリクエストを送信
+        fetch(apiUrl)
+            .then(response => {
+                // レスポンスが正常か確認
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // JSONとしてレスポンスを解析
+            })
+            .then(data => {
+                // formatStreamsからURLを取得
+                const formatStreams = data.formatStreams;
+                if (formatStreams && formatStreams.length > 0) {
+                    // 最初のURLを使用（必要に応じて他の条件に変更）
+                    const videoUrl = formatStreams[0].url;
+
+                    // Videoタグを作成してURLを代入
+                    const videoTag = document.createElement('video');
+                    videoTag.src = videoUrl;
+                    videoTag.controls = true; // コントロールを表示
+
+                    // 動画を表示するための要素に追加
+                    document.body.appendChild(videoTag);
+                } else {
+                    console.error('No formatStreams found in the response');
+                }
+
+                // 取得したJSONを表示するための要素を作成
+                const jsonDisplay = document.createElement('pre');
+                jsonDisplay.textContent = JSON.stringify(data, null, 2); // 整形して表示
+
+                // 30行の改行を追加
+                for (let i = 0; i < 30; i++) {
+                    jsonDisplay.appendChild(document.createElement('br'));
+                }
+
+                // JSONをページの一番下に追加
+                document.body.appendChild(jsonDisplay);
+            })
+            .catch(error => {
+                console.error('Error fetching video data:', error);
+            });
+    };
+</script>
+
+</body>
+</html>
